@@ -1,0 +1,7 @@
+streamlit
+pandas
+scikit-learn
+joblib
+bcrypt
+fpdf2
+sqlite3
