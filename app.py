@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import dashboard, history, predict, patients
+from modules import dashboard, history, predict, patients
 from auth import login_page, register_page, logout
 
 # Configuration de la page
