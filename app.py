@@ -1,6 +1,7 @@
 import streamlit as st
 from modules import dashboard, history, predict, patients
 from auth import login_page, register_page, logout
+from db import init_db
 
 # Configuration de la page
 st.set_page_config(
@@ -16,6 +17,8 @@ if "user_id" not in st.session_state:
     st.session_state["user_id"] = None
 if "page" not in st.session_state:
     st.session_state["page"] = "login"
+
+init_db()
 
 # CSS personnalisé pour le menu latéral stylisé
 st.markdown("""

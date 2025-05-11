@@ -62,6 +62,43 @@ def get_predictions(user_id):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT data, prediction FROM predictions WHERE user_id = ?", (user_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    
+    # Convertir les prédictions bytes en int
+    return [(data, int.from_bytes(pred, byteorder='little') if isinstance(pred, bytes) else int(pred)) 
+            for data, pred in rows]
+
+def get_predictions_with_dates(user_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT data, prediction, created_at 
+        FROM predictions 
+        WHERE user_id = ? 
+        ORDER BY created_at DESC
+    """, (user_id,))
     preds = cursor.fetchall()
     conn.close()
     return preds
+
+def fix_existing_predictions():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Récupérer toutes les prédictions
+    cursor.execute("SELECT rowid, prediction FROM predictions")
+    rows = cursor.fetchall()
+    
+    for row in rows:
+        rowid, pred = row
+        if isinstance(pred, bytes):
+            # Convertir bytes en int
+            new_pred = int.from_bytes(pred, byteorder='little')
+            cursor.execute("UPDATE predictions SET prediction = ? WHERE rowid = ?", (new_pred, rowid))
+    
+    conn.commit()
+    conn.close()
+
+# Exécuter une seule fois
+fix_existing_predictions()
