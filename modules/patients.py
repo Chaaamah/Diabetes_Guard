@@ -216,7 +216,7 @@ def display_medical_data(conn, disabled):
     query = """
     SELECT patients.nom, patients.prenom, predictions.data, predictions.prediction
     FROM patients
-    JOIN predictions ON patients.id = predictions.patient_id
+    JOIN predictions ON patients.nom || ' ' || patients.prenom = predictions.username
     """
     df = pd.read_sql_query(query, conn)
 
