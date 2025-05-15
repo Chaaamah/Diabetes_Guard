@@ -214,9 +214,9 @@ def display_medical_data(conn, disabled):
 
     st.subheader("📊 Données médicales et prescriptions")
     query = """
-    SELECT users.username, predictions.data, predictions.prediction
-    FROM users
-    JOIN predictions ON users.id = predictions.user_id
+    SELECT patients.nom, patients.prenom, predictions.data, predictions.prediction
+    FROM patients
+    JOIN predictions ON patients.id = predictions.patient_id
     """
     df = pd.read_sql_query(query, conn)
 
@@ -229,7 +229,8 @@ def display_medical_data(conn, disabled):
     if not df.empty:
         parsed_data = df['data'].apply(parse_data)
         data_df = pd.json_normalize(parsed_data)
-        data_df['username'] = df['username']
+        data_df['nom'] = df['nom']
+        data_df['prenom'] = df['prenom']
 
         def convert_prediction(pred):
             if isinstance(pred, bytes):
@@ -243,7 +244,7 @@ def display_medical_data(conn, disabled):
         data_df['risque'] = data_df['prediction'].apply(lambda x: 'Diabétique' if x == 1 else 'Non diabétique')
 
         st.dataframe(
-            data_df[['username', 'risque', 'Glucose', 'BMI', 'Age', 'BloodPressure']],
+            data_df[['nom','prenom', 'risque', 'Glucose', 'BMI', 'Age', 'BloodPressure']],
             hide_index=True
         )
 
